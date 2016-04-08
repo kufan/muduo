@@ -5,7 +5,6 @@
 // that can be found in the License file.
 
 // Author: Shuo Chen (chenshuo at chenshuo dot com)
-//
 
 #include <muduo/net/http/HttpResponse.h>
 #include <muduo/net/Buffer.h>

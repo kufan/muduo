@@ -214,7 +214,8 @@ int Hiredis::command(const CommandCallback& cb, muduo::StringArg cmd, ...)
   return ret;
 }
 
-/* static */ void Hiredis::commandCallback(redisAsyncContext* ac, void* r, void* privdata)
+/* static */ 
+void Hiredis::commandCallback(redisAsyncContext* ac, void* r, void* privdata)
 {
   redisReply* reply = static_cast<redisReply*>(r);
   CommandCallback* cb = static_cast<CommandCallback*>(privdata);

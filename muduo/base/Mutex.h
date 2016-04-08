@@ -48,6 +48,7 @@ namespace muduo
 //   mutable MutexLock mutex_;
 //   std::vector<int> data_; // GUARDED BY mutex_
 // };
+
 class MutexLock : boost::noncopyable
 {
  public:
@@ -134,6 +135,7 @@ class MutexLock : boost::noncopyable
 //   MutexLockGuard lock(mutex_);
 //   return data_.size();
 // }
+
 class MutexLockGuard : boost::noncopyable
 {
  public:
@@ -158,6 +160,7 @@ class MutexLockGuard : boost::noncopyable
 // Prevent misuse like:
 // MutexLockGuard(mutex_);
 // A tempory object doesn't hold the lock for long!
+
 #define MutexLockGuard(x) error "Missing guard object name"
 
 #endif  // MUDUO_BASE_MUTEX_H
