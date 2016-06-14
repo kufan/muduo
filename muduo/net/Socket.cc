@@ -1,11 +1,3 @@
-// Copyright 2010, Shuo Chen.  All rights reserved.
-// http://code.google.com/p/muduo/
-//
-// Use of this source code is governed by a BSD-style license
-// that can be found in the License file.
-
-// Author: Shuo Chen (chenshuo at chenshuo dot com)
-
 #include <muduo/net/Socket.h>
 
 #include <muduo/base/Logging.h>
@@ -82,7 +74,7 @@ int Socket::accept(InetAddress* peeraddr)
 
 void Socket::shutdownWrite()
 {
-  sockets::shutdownWrite(sockfd_);
+	sockets::shutdownWrite(sockfd_);
 }
 
 void Socket::setTcpNoDelay(bool on)
@@ -90,7 +82,12 @@ void Socket::setTcpNoDelay(bool on)
   int optval = on ? 1 : 0;
   ::setsockopt(sockfd_, IPPROTO_TCP, TCP_NODELAY,
                &optval, static_cast<socklen_t>(sizeof optval));
-  // FIXME CHECK
+}
+
+void Socket::setTcpNoDelay(bool on)
+{
+	int optval = on ? 1 : 0;
+	::setsockopt(sockfd_, IPPROTO_TCP, TCP_NODELAY, &optval, static_cast<socklen_t>(sizeof optval));
 }
 
 void Socket::setReuseAddr(bool on)
@@ -98,7 +95,6 @@ void Socket::setReuseAddr(bool on)
   int optval = on ? 1 : 0;
   ::setsockopt(sockfd_, SOL_SOCKET, SO_REUSEADDR,
                &optval, static_cast<socklen_t>(sizeof optval));
-  // FIXME CHECK
 }
 
 void Socket::setReusePort(bool on)
@@ -121,9 +117,6 @@ void Socket::setReusePort(bool on)
 
 void Socket::setKeepAlive(bool on)
 {
-  int optval = on ? 1 : 0;
-  ::setsockopt(sockfd_, SOL_SOCKET, SO_KEEPALIVE,
-               &optval, static_cast<socklen_t>(sizeof optval));
-  // FIXME CHECK
+	int optval = on ? 1 : 0;
+	::setsockopt(sockfd_, SOL_SOCKET, SO_KEEPALIVE, &optval, static_cast<socklen_t>(sizeof optval));
 }
-

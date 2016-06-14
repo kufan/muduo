@@ -1,8 +1,3 @@
-// Use of this source code is governed by a BSD-style license
-// that can be found in the License file.
-//
-// Author: Shuo Chen (chenshuo at chenshuo dot com)
-
 #include <muduo/base/Thread.h>
 #include <muduo/base/CurrentThread.h>
 #include <muduo/base/Exception.h>
@@ -118,12 +113,12 @@ struct ThreadData
   }
 };
 
-void* startThread(void* obj)
+void *startThread(void* obj)
 {
-  ThreadData* data = static_cast<ThreadData*>(obj);
-  data->runInThread();
-  delete data;
-  return NULL;
+	ThreadData* data = static_cast<ThreadData*>(obj);
+	data -> runInThread();
+	delete data;
+	return NULL;
 }
 
 }
@@ -142,7 +137,7 @@ void CurrentThread::cacheTid()
 
 bool CurrentThread::isMainThread()
 {
-  return tid() == ::getpid();
+	return tid() == ::getpid();
 }
 
 void CurrentThread::sleepUsec(int64_t usec)
@@ -167,18 +162,11 @@ Thread::Thread(const ThreadFunc& func, const string& n)
 }
 
 #ifdef __GXX_EXPERIMENTAL_CXX0X__
-Thread::Thread(ThreadFunc&& func, const string& n)
-  : started_(false),
-    joined_(false),
-    pthreadId_(0),
-    tid_(new pid_t(0)),
-    func_(std::move(func)),
-    name_(n)
-{
-  setDefaultName();
+Thread::Thread(ThreadFunc&& func, const string& n) : started_(false), joined_(false), pthreadId_(0), tid_(new pid_t(0)), func_(std::move(func)), name(n){
+	setDefaultName();
 }
-
 #endif
+
 
 Thread::~Thread()
 {
@@ -190,34 +178,32 @@ Thread::~Thread()
 
 void Thread::setDefaultName()
 {
-  int num = numCreated_.incrementAndGet();
-  if (name_.empty())
-  {
-    char buf[32];
-    snprintf(buf, sizeof buf, "Thread%d", num);
-    name_ = buf;
-  }
+	int num = numCreated_.incrementAndGet();
+	if(name_.empty()){
+		char buf[32];
+		snprintf(buf, sizeof buf, "Thread%d", num);
+		name_ = buf;
+	}
 }
 
 void Thread::start()
 {
-  assert(!started_);
-  started_ = true;
-  // FIXME: move(func_)
-  detail::ThreadData* data = new detail::ThreadData(func_, name_, tid_);
-  if (pthread_create(&pthreadId_, NULL, &detail::startThread, data))
-  {
-    started_ = false;
-    delete data; // or no delete?
-    LOG_SYSFATAL << "Failed in pthread_create";
-  }
+	assert(!started_);
+	started_ = true;
+
+	detail::ThreadData* data = new detail::ThreadData(func_, name_, tid_);
+
+	if(pthread_create(&pthreadId_, NULL, &detail::startThread, data)){
+		started_ = false;
+		delete data;
+		LOG_SYSFATAL << "Failed in pthread_create";
+	}
 }
 
 int Thread::join()
 {
-  assert(started_);
-  assert(!joined_);
-  joined_ = true;
-  return pthread_join(pthreadId_, NULL);
+	assert(started_);
+	assert(!joined_);
+	joined_ = true;
+	return pthread_join(pthreadId_, NULL);
 }
-

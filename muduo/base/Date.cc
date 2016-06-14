@@ -1,8 +1,3 @@
-// Use of this source code is governed by a BSD-style license
-// that can be found in the License file.
-//
-// Author: Shuo Chen (chenshuo at chenshuo dot com)
-
 #include <muduo/base/Date.h>
 #include <stdio.h>
 
@@ -51,11 +46,7 @@ Date::Date(int y, int m, int d)
 {
 }
 
-Date::Date(const struct tm& t)
-  : julianDayNumber_(getJulianDayNumber(
-        t.tm_year+1900,
-        t.tm_mon+1,
-        t.tm_mday))
+Date::Date(const struct tm& t) : julianDayNumber_(getJulianDayNumber(t.tm_year + 1990, t.tm_mon + 1, t.tm_mday))
 {
 }
 

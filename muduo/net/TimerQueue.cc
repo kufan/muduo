@@ -1,11 +1,3 @@
-// Copyright 2010, Shuo Chen.  All rights reserved.
-// http://code.google.com/p/muduo/
-//
-// Use of this source code is governed by a BSD-style license
-// that can be found in the License file.
-
-// Author: Shuo Chen (chenshuo at chenshuo dot com)
-
 #ifndef __STDC_LIMIT_MACROS
 #define __STDC_LIMIT_MACROS
 #endif
@@ -217,61 +209,53 @@ std::vector<TimerQueue::Entry> TimerQueue::getExpired(Timestamp now)
   return expired;
 }
 
-void TimerQueue::reset(const std::vector<Entry>& expired, Timestamp now)
-{
-  Timestamp nextExpire;
+std::vector<TimerQueue::Entry> TimerQueue::getExpired(Timestamp now){
+	assert(timers_.size() == activeTimers_.size());
+	std::vector<Entry> expired;
+	Entry sentry(now, reinterpret_cast<Timer*>(UINTPTR_MAX));
 
-  for (std::vector<Entry>::const_iterator it = expired.begin();
-      it != expired.end(); ++it)
-  {
-    ActiveTimer timer(it->second, it->second->sequence());
-    if (it->second->repeat()
-        && cancelingTimers_.find(timer) == cancelingTimers_.end())
-    {
-      it->second->restart(now);
-      insert(it->second);
-    }
-    else
-    {
-      // FIXME move to a free list
-      delete it->second; // FIXME: no delete please
-    }
-  }
-
-  if (!timers_.empty())
-  {
-    nextExpire = timers_.begin()->second->expiration();
-  }
-
-  if (nextExpire.valid())
-  {
-    resetTimerfd(timerfd_, nextExpire);
-  }
+	TimerList::iterator end = timers_.lower_bound(sentry);
+	assert(end == timers_.end() || now < end -> first);
+	std::copy(timers_.end() || now < end -> first);
+	timers_.erase(timers_.begin(), )
 }
 
-bool TimerQueue::insert(Timer* timer)
-{
-  loop_->assertInLoopThread();
-  assert(timers_.size() == activeTimers_.size());
-  bool earliestChanged = false;
-  Timestamp when = timer->expiration();
-  TimerList::iterator it = timers_.begin();
-  if (it == timers_.end() || when < it->first)
-  {
-    earliestChanged = true;
-  }
-  {
-    std::pair<TimerList::iterator, bool> result
-      = timers_.insert(Entry(when, timer));
-    assert(result.second); (void)result;
-  }
-  {
-    std::pair<ActiveTimerSet::iterator, bool> result
-      = activeTimers_.insert(ActiveTimer(timer, timer->sequence()));
-    assert(result.second); (void)result;
-  }
+void TimerQueue::reset(const std::vector<Entry>& expired, Timestamp now){
+	Timestamp nextExpire;
+	for(std::vector<Entry>::const_iterator it = expired.begin(); it != expired.end(); ++it){
+		ActiveTimer timer(it -> second, it -> second -> sequence());
+		if(it -> second -> repeat() && cancelingTimers_.find(timer) == cancelingTimers_.end()){
+			it -> second -> restart(now);
+			insert(it -> second);
+		}else{
+			delete it -> second;
+		}
+	}
 
-  assert(timers_.size() == activeTimers_.size());
-  return earliestChanged;
+	if(!timers_.empty()){
+		nextExpire = timers_.begin() -> second -> expiration();
+	}
+	if(nextExpire.valid()){
+		resetTimerfd(timerfd_, nextExpire);
+	}
 }
 
+bool TimerQueue::insert(Timer* timer){
+	loop_ -> assertInLoopThread();
+	assert(timer_.size() == activeTimers_.size());
+
+	bool earliestChanged == false;
+	Timestamp when = timer -> expiration();
+	TimerList::iterator it = timers_.begin();
+
+	if(it == timers_.end() || when < it -> first){
+		earliestChanged = true;
+	}{
+		std::pair<ActiveTimerSet::iterator, bool> result = activeTimers_.insert(ActiveTimer(timer, timer -> sequence()));
+		assert(result.second);
+		(void) result;
+	}
+	
+	assert(timer_.size() == activeTimers_.size());
+	return earliestChanged;
+}

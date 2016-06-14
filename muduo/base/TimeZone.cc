@@ -291,6 +291,16 @@ struct tm TimeZone::toLocalTime(time_t seconds) const
   return localTime;
 }
 
+struct tm TimeZone::toLocalTime(time_t seconds) const{
+	struct tm localTime;
+	bzero(&localTime, sizeof(localTime));
+	assert(data_ != NULL);
+	const Data& data(*data_);
+
+	deltail::Transition sentry(seconds, 0, 0);
+	const detail::Localtime
+}
+
 time_t TimeZone::fromLocalTime(const struct tm& localTm) const
 {
   assert(data_ != NULL);

@@ -1,11 +1,3 @@
-// Copyright 2010, Shuo Chen.  All rights reserved.
-// http://code.google.com/p/muduo/
-//
-// Use of this source code is governed by a BSD-style license
-// that can be found in the License file.
-
-// Author: Shuo Chen (chenshuo at chenshuo dot com)
-
 #include <muduo/net/TcpServer.h>
 
 #include <muduo/base/Logging.h>
@@ -60,16 +52,13 @@ void TcpServer::setThreadNum(int numThreads)
   threadPool_->setThreadNum(numThreads);
 }
 
-void TcpServer::start()
-{
-  if (started_.getAndSet(1) == 0)
-  {
-    threadPool_->start(threadInitCallback_);
+void TcpServer::start(){
+	if(started_.getAndSet(1) == 0){
+		threadPool_ -> start(threadInitCallback_);
 
-    assert(!acceptor_->listenning());
-    loop_->runInLoop(
-        boost::bind(&Acceptor::listen, get_pointer(acceptor_)));
-  }
+		assert(!acceptor_ -> listenning());
+		loop_ -> runInLoop(boost::bind(&Acceptor::listen, get_pointer(acceptor_)));
+	}
 }
 
 void TcpServer::newConnection(int sockfd, const InetAddress& peerAddr)
@@ -107,16 +96,13 @@ void TcpServer::removeConnection(const TcpConnectionPtr& conn)
   loop_->runInLoop(boost::bind(&TcpServer::removeConnectionInLoop, this, conn));
 }
 
-void TcpServer::removeConnectionInLoop(const TcpConnectionPtr& conn)
-{
-  loop_->assertInLoopThread();
-  LOG_INFO << "TcpServer::removeConnectionInLoop [" << name_
-           << "] - connection " << conn->name();
-  size_t n = connections_.erase(conn->name());
-  (void)n;
-  assert(n == 1);
-  EventLoop* ioLoop = conn->getLoop();
-  ioLoop->queueInLoop(
-      boost::bind(&TcpConnection::connectDestroyed, conn));
+void TcpServer::removeConnection(const TcpConnectionPtr& conn){
+	loop_ -> assertInLoopThread();
+	LOG_INFO << "TcpServer::removeConnectionInLoop [" << name_
+			 << "] - connection " << conn -> name();
+	size_t n = connections_.erase(conn -> name())；
+	(void)n;
+	assert(n == 1);
+	EventLoop* ioLoop = conn -> getLoop();
+	ioLoop -> queueInLoop(boost::bind(&TcpConnection::connectDestroyed, conn));
 }
-
