@@ -1,12 +1,5 @@
-// Use of this source code is governed by a BSD-style license
-// that can be found in the License file.
-//
-// Author: Shuo Chen (chenshuo at chenshuo dot com)
-
 #include <muduo/base/ThreadPool.h>
-
 #include <muduo/base/Exception.h>
-
 #include <boost/bind.hpp>
 #include <assert.h>
 #include <stdio.h>
@@ -113,7 +106,6 @@ void ThreadPool::run(Task&& task)
 ThreadPool::Task ThreadPool::take()
 {
   MutexLockGuard lock(mutex_);
-  // always use a while-loop, due to spurious wakeup
   while (queue_.empty() && running_)
   {
     notEmpty_.wait();
